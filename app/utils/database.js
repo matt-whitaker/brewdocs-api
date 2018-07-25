@@ -10,10 +10,12 @@ const connection = {
     database: process.env.DATABASE_NAME
 };
 
-export default knex({
+export const knexConfig = {
     client: config.get('database.client'),
     connection,
     pool: {
         ...config.get('database.pool')
     }
-});
+};
+
+export default knex(knexConfig);
