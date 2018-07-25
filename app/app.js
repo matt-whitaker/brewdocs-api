@@ -1,5 +1,10 @@
 import express from 'express';
+import cors from 'cors';
 import health from './routes/health';
+import api from './routes/api';
+import config from 'config';
+
+const version = config.get('apiVersion');
 
 function createApp () {
     return new Promise((res, rej) => {
@@ -9,9 +14,19 @@ function createApp () {
         app.set('port', port);
 
         /**
+         * CORS
+         */
+        app.use(cors());
+
+        /**
+         * Setup API router
+         */
+        app.use(`/api/${version}`, api.router());
+
+        /**
          * Setup health check
          */
-        app.use(['/health', 'health'], health.router());
+        app.use('/health', health.router());
 
         /**
          * Start the application
