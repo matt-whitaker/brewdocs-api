@@ -1,0 +1,42 @@
+{
+  "name": "brewdocs-api",
+  "version": "0.0.0",
+  "description": "REST API for brewdocs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npm run transpile && node --require dotenv/config lib/server.js",
+    "transpile": "babel app --out-dir lib",
+    "mysql:start": "./bin/mysql-start.sh",
+    "mysql:stop": "./bin/mysql-stop.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matt-whitaker/brewdocs-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/matt-whitaker/brewdocs-api/issues"
+  },
+  "homepage": "https://github.com/matt-whitaker/brewdocs-api#readme",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "cluster": "^0.7.7",
+    "config": "^1.31.0",
+    "deep-equal": "^1.0.1",
+    "express": "^4.16.3",
+    "knex": "^0.15.2",
+    "mysql": "^2.16.0",
+    "ramda": "^0.25.0",
+    "request-promise": "^4.2.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-latest": "^6.24.1",
+    "dotenv": "^6.0.0"
+  }
+}
