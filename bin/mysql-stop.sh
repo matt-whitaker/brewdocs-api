@@ -1,3 +1,3 @@
 #!/bin/bash
-docker kill brewdocs-mariadb
-docker rm brewdocs-mariadb
+docker kill brewdocs-mysql
+docker rm brewdocs-mysql
