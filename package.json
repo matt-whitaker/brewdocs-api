@@ -1,6 +1,6 @@
 {
   "name": "brewdocs-api",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "REST API for brewdocs",
   "main": "index.js",
   "scripts": {
