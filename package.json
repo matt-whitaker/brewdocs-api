@@ -1,0 +1,21 @@
+{
+  "name": "brewdocs-api",
+  "version": "1.0.0",
+  "description": "REST API for brewdocs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "mysql:start": "./bin/mysql-start.sh",
+    "mysql:stop": "./bin/mysql-stop.sh",
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matt-whitaker/brewdocs-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/matt-whitaker/brewdocs-api/issues"
+  },
+  "homepage": "https://github.com/matt-whitaker/brewdocs-api#readme"
+}
