@@ -1,14 +1,16 @@
 import os from 'os';
 import R from 'ramda';
+import database from './../utils/database';
+
 
 const rejectNil = R.reject(R.isNil);
-
-import database from './../utils/database';
+const isProd = process.env.NODE_ENV === 'production';
 
 function check (req, res, next) {
     const info = rejectNil({
         environment: process.env.NODE_ENV,
-        pid: process.env.NODE_ENV === 'production' ? null : process.pid
+        branch: !isProd ? process.env.BREWDOCS_BRANCH : null,
+        tag: isProd ? process.env.BREWDOCS_TAG : null
     });
 
     database.raw('select 1;')
