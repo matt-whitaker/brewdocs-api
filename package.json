@@ -8,8 +8,12 @@
     "lint:fix": "eslint --fix ./app ./test ./migrations",
     "pretest": "npm run lint",
     "test": "nyc mocha --file test/setup.js --recursive \"test/**/*.spec.js\"",
-    "dev": "npm run transpile && node --require dotenv/config lib/server.js",
-    "transpile": "babel app --out-dir lib",
+    "start": "npm run server",
+    "dev": "concurrently \"npm run build:dev\" \"npm run server:dev\"",
+    "server": "node lib/server.js",
+    "server:dev": "nodemon --require dotenv/config lib/server.js",
+    "build": "babel app --out-dir lib",
+    "build:dev": "babel --watch app --out-dir lib",
     "mysql:start": "./bin/mysql-start.sh",
     "mysql:stop": "./bin/mysql-stop.sh"
   },
@@ -44,6 +48,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-latest": "^6.24.1",
     "chai": "^4.1.2",
+    "concurrently": "^3.6.1",
     "dotenv": "^6.0.0",
     "eslint": "^5.2.0",
     "eslint-config-airbnb": "^17.0.0",
@@ -57,6 +62,7 @@
     "eslint-plugin-react": "^7.10.0",
     "eslint-plugin-standard": "^3.1.0",
     "mocha": "^5.2.0",
+    "nodemon": "^1.18.3",
     "nyc": "^12.0.2",
     "sinon": "^6.1.4"
   }
