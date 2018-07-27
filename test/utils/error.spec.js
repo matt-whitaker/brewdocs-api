@@ -8,7 +8,7 @@ describe('error utils', () => {
       const { name, message } = testError;
 
       expect(testError).to.be.instanceOf(Error);
-      expect({ name, message }).to.equal({
+      expect({ name, message }).to.eql({
         name: 'TestError',
         message: 'TestError message.'
       });
