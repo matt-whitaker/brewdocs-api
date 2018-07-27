@@ -1,6 +1,8 @@
 import recipesRepository from '../../app/repositories/recipes';
 import recipesService from '../../app/services/recipes';
 
+import recipesData from '../../data/recipes';
+
 describe('recipes service', () => {
   let sandbox, mockRecipesRepository;
 
@@ -25,11 +27,11 @@ describe('recipes service', () => {
     });
 
     it('can resolve with an a populated list', () => {
-      mockRecipesRepository.expects('get').resolves([{ id: 1 }, { id: 2 }]);
+      mockRecipesRepository.expects('get').resolves(recipesData);
 
       return recipesService.list()
         .then((recipes) => {
-          expect(recipes).to.eql([{ id: 1 }, { id: 2 }]);
+          expect(recipes).to.eql(recipesData);
           mockRecipesRepository.verify();
         });
     });

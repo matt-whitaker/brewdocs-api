@@ -1,6 +1,8 @@
 import database from '../../app/utils/database';
 import recipesRepository from '../../app/repositories/recipes';
 
+import recipesData from '../../data/recipes';
+
 describe('recipes repository', () => {
   let sandbox, mockDatabase;
 
@@ -29,11 +31,11 @@ describe('recipes repository', () => {
     });
 
     it('can resolve with an a populated list', () => {
-      mockDatabase.expects('select').withArgs('*').resolves([{ id: 1 }, { id: 2 }]);
+      mockDatabase.expects('select').withArgs('*').resolves(recipesData);
 
       return recipesRepository.get()
         .then((recipes) => {
-          expect(recipes).to.eql([{ id: 1 }, { id: 2 }]);
+          expect(recipes).to.eql(recipesData);
           mockDatabase.verify();
         });
     });
