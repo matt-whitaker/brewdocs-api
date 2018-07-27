@@ -7,7 +7,7 @@ import config from 'config';
 const version = config.get('apiVersion');
 
 function createApp () {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const app = express();
     const port = process.env.PORT;
 
