@@ -1,7 +1,7 @@
-function handleDbError (err) {
+function handleError (err) {
   throw err;
 }
 
 export default {
-  handleDbError
+  handleError
 };
