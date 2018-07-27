@@ -4,7 +4,7 @@
   "description": "REST API for brewdocs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha test/**/*.spec.js --file test/setup.js --recursive",
     "dev": "npm run transpile && node --require dotenv/config lib/server.js",
     "transpile": "babel app --out-dir lib",
     "mysql:start": "./bin/mysql-start.sh",
@@ -38,6 +38,9 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-latest": "^6.24.1",
-    "dotenv": "^6.0.0"
+    "chai": "^4.1.2",
+    "dotenv": "^6.0.0",
+    "mocha": "^5.2.0",
+    "sinon": "^6.1.4"
   }
 }

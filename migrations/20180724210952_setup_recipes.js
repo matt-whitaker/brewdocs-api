@@ -7,7 +7,7 @@ exports.up = function(knex, Promise) {
         table.string('slug');
         table.text('description').nullable();
     }).then(() =>
-        knex.batchInsert('recipes', recipes));
+        process.env.SEED_SKIP ? null : knex.batchInsert('recipes', recipes));
 };
 
 exports.down = function(knex, Promise) {
