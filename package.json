@@ -4,9 +4,16 @@
   "description": "REST API for brewdocs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm run transpile && node --require dotenv/config lib/server.js",
-    "transpile": "babel app --out-dir lib",
+    "lint": "eslint ./app ./test ./migrations",
+    "lint:fix": "eslint --fix ./app ./test ./migrations",
+    "pretest": "npm run lint",
+    "test": "nyc mocha --file test/setup.js --recursive \"test/**/*.spec.js\"",
+    "start": "npm run server",
+    "dev": "npm run build && concurrently \"npm run build:dev\" \"npm run server:dev\"",
+    "server": "node lib/server.js",
+    "server:dev": "nodemon --require dotenv/config lib/server.js",
+    "build": "babel app --out-dir lib",
+    "build:dev": "babel --watch --skip-initial-build app --out-dir lib",
     "mysql:start": "./bin/mysql-start.sh",
     "mysql:stop": "./bin/mysql-stop.sh"
   },
@@ -22,14 +29,17 @@
   "homepage": "https://github.com/matt-whitaker/brewdocs-api#readme",
   "dependencies": {
     "bluebird": "^3.5.1",
+    "boom": "^7.2.0",
     "cluster": "^0.7.7",
     "config": "^1.31.0",
+    "cors": "^2.8.4",
     "deep-equal": "^1.0.1",
     "express": "^4.16.3",
     "knex": "^0.15.2",
     "mysql": "^2.16.0",
     "ramda": "^0.25.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "winston": "^3.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -37,6 +47,23 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-latest": "^6.24.1",
-    "dotenv": "^6.0.0"
+    "chai": "^4.1.2",
+    "concurrently": "^3.6.1",
+    "dotenv": "^6.0.0",
+    "eslint": "^5.2.0",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-config-eslint": "^5.0.1",
+    "eslint-config-google": "^0.9.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-react": "^7.10.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.3",
+    "nyc": "^12.0.2",
+    "sinon": "^6.1.4"
   }
 }

@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import health from '../controllers/health';
+import recipes from '../../controllers/api/recipes';
 
 function createRouter () {
   const router = new Router();
 
-  router.get('/', health.check);
+  router.get('/', recipes.list);
 
   return router;
 }

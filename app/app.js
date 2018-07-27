@@ -1,28 +1,43 @@
 import express from 'express';
+import cors from 'cors';
 import health from './routes/health';
+import api from './routes/api';
+import config from 'config';
+
+const version = config.get('apiVersion');
 
 function createApp () {
-    return new Promise((res, rej) => {
-        const app = express();
-        const port = process.env.PORT;
+  return new Promise((resolve) => {
+    const app = express();
+    const port = process.env.PORT;
 
-        app.set('port', port);
+    app.set('port', port);
 
-        /**
-         * Setup health check
-         */
-        app.use(['/health', 'health'], health.router());
+    /**
+     * CORS
+     */
+    app.use(cors());
 
-        /**
-         * Start the application
-         */
-        app.listen(port, () => {
-            console.log(`Express started on port ${port}`);
-            res(app);
-        });
-    })
+    /**
+     * Setup API router
+     */
+    app.use(`/api/${version}`, api.router());
+
+    /**
+     * Setup health check
+     */
+    app.use('/health', health.router());
+
+    /**
+     * Start the application
+     */
+    app.listen(port, () => {
+      console.log(`Express started on port ${port}`);
+      resolve(app);
+    });
+  });
 }
 
 export default {
-    create: createApp
+  create: createApp
 };
