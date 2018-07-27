@@ -4,6 +4,9 @@
   "description": "REST API for brewdocs",
   "main": "index.js",
   "scripts": {
+    "eslint": "eslint ./app ./test ./migrations",
+    "eslint:fix": "eslint --fix ./app ./test ./migrations",
+    "pretest": "npm run eslint",
     "test": "mocha test/**/*.spec.js --file test/setup.js --recursive",
     "dev": "npm run transpile && node --require dotenv/config lib/server.js",
     "transpile": "babel app --out-dir lib",
@@ -40,6 +43,17 @@
     "babel-preset-latest": "^6.24.1",
     "chai": "^4.1.2",
     "dotenv": "^6.0.0",
+    "eslint": "^5.2.0",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-config-eslint": "^5.0.1",
+    "eslint-config-google": "^0.9.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-react": "^7.10.0",
+    "eslint-plugin-standard": "^3.1.0",
     "mocha": "^5.2.0",
     "sinon": "^6.1.4"
   }

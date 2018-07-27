@@ -1,0 +1,17 @@
+{
+    "extends": "standard",
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "rules": {
+        "semi": [0]
+    },
+    "overrides": [
+        {
+            "files": [ "test/**/*" ],
+            "rules": {
+                "no-undef": [0]
+            }
+        }
+    ]
+}

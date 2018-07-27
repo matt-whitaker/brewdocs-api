@@ -1,9 +1,9 @@
-import recipesRepository from './../../repositories/recipes';
+import recipesService from './../../services/recipes';
 
 function list (req, res) {
-    return recipesRepository.get().then((recipes) => res.status(200).json(recipes));
+  return recipesService.list().then((recipes) => res.status(200).json(recipes));
 }
 
 export default {
-    list
+  list
 };

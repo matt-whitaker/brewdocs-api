@@ -1,14 +1,14 @@
-import { Router } from 'express';
+import {Router} from 'express';
 import recipes from '../../controllers/api/recipes';
 
 function createRouter () {
-    const router = new Router();
+  const router = new Router();
 
-    router.get('/', recipes.list);
+  router.get('/', recipes.list);
 
-    return router;
+  return router;
 }
 
 export default {
-    router: createRouter
+  router: createRouter
 }

@@ -7,37 +7,37 @@ import config from 'config';
 const version = config.get('apiVersion');
 
 function createApp () {
-    return new Promise((res, rej) => {
-        const app = express();
-        const port = process.env.PORT;
+  return new Promise((resolve, reject) => {
+    const app = express();
+    const port = process.env.PORT;
 
-        app.set('port', port);
+    app.set('port', port);
 
-        /**
-         * CORS
-         */
-        app.use(cors());
+    /**
+     * CORS
+     */
+    app.use(cors());
 
-        /**
-         * Setup API router
-         */
-        app.use(`/api/${version}`, api.router());
+    /**
+     * Setup API router
+     */
+    app.use(`/api/${version}`, api.router());
 
-        /**
-         * Setup health check
-         */
-        app.use('/health', health.router());
+    /**
+     * Setup health check
+     */
+    app.use('/health', health.router());
 
-        /**
-         * Start the application
-         */
-        app.listen(port, () => {
-            console.log(`Express started on port ${port}`);
-            res(app);
-        });
-    })
+    /**
+     * Start the application
+     */
+    app.listen(port, () => {
+      console.log(`Express started on port ${port}`);
+      resolve(app);
+    });
+  })
 }
 
 export default {
-    create: createApp
+  create: createApp
 };

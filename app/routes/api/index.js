@@ -1,14 +1,14 @@
-import { Router } from 'express';
+import {Router} from 'express';
 import recipes from './recipes';
 
 function createRouter () {
-    const router = new Router();
+  const router = new Router();
 
-    router.use('/recipes', recipes.router());
+  router.use('/recipes', recipes.router());
 
-    return router;
+  return router;
 }
 
 export default {
-    router: createRouter
+  router: createRouter
 }
