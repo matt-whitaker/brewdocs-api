@@ -9,11 +9,11 @@
     "pretest": "npm run lint",
     "test": "nyc mocha --file test/setup.js --recursive \"test/**/*.spec.js\"",
     "start": "npm run server",
-    "dev": "concurrently \"npm run build:dev\" \"npm run server:dev\"",
+    "dev": "npm run build && concurrently \"npm run build:dev\" \"npm run server:dev\"",
     "server": "node lib/server.js",
     "server:dev": "nodemon --require dotenv/config lib/server.js",
     "build": "babel app --out-dir lib",
-    "build:dev": "babel --watch app --out-dir lib",
+    "build:dev": "babel --watch --skip-initial-build app --out-dir lib",
     "mysql:start": "./bin/mysql-start.sh",
     "mysql:stop": "./bin/mysql-stop.sh"
   },
