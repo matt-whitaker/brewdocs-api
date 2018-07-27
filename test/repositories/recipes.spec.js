@@ -49,7 +49,7 @@ describe('recipes repository', () => {
         .catch(({ name, message }) => {
           expect({ name, message }).to.eql({
             name: 'DatabaseError',
-            message: 'There was an error with the database.'
+            message: 'There was a database error.'
           });
         });
     });

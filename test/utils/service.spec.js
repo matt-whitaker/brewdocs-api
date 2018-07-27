@@ -1,16 +1,17 @@
 import serviceUtils from '../../app/utils/service';
 
 describe('service utils', () => {
-  describe('#handleDbError', () => {
+  describe('#handleError', () => {
     it('rethrows', () => {
       const error = new Error('Test');
 
       try {
-        serviceUtils.handleDbError(error);
-        throw new Error('Failed to throw');
+        serviceUtils.handleError(error);
       } catch (err) {
-        expect(err).to.equal(error);
+        return expect(err).to.equal(error);
       }
+
+      throw new Error('Failed to throw');
     });
   });
 });

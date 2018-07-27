@@ -6,7 +6,7 @@ const createDbError = error.create('DatabaseError');
 function handleDbError (err) {
   log.error(err);
 
-  throw createDbError('There was an error with the database.');
+  throw createDbError('There was a database error.');
 }
 
 export default {
