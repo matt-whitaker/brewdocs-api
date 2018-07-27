@@ -4,10 +4,10 @@
   "description": "REST API for brewdocs",
   "main": "index.js",
   "scripts": {
-    "eslint": "eslint ./app ./test ./migrations",
-    "eslint:fix": "eslint --fix ./app ./test ./migrations",
-    "pretest": "npm run eslint",
-    "test": "mocha test/**/*.spec.js --file test/setup.js --recursive",
+    "lint": "eslint ./app ./test ./migrations",
+    "lint:fix": "eslint --fix ./app ./test ./migrations",
+    "pretest": "npm run lint",
+    "test": "nyc mocha --file test/setup.js --recursive \"test/**/*.spec.js\"",
     "dev": "npm run transpile && node --require dotenv/config lib/server.js",
     "transpile": "babel app --out-dir lib",
     "mysql:start": "./bin/mysql-start.sh",
@@ -25,6 +25,7 @@
   "homepage": "https://github.com/matt-whitaker/brewdocs-api#readme",
   "dependencies": {
     "bluebird": "^3.5.1",
+    "boom": "^7.2.0",
     "cluster": "^0.7.7",
     "config": "^1.31.0",
     "cors": "^2.8.4",
@@ -33,7 +34,8 @@
     "knex": "^0.15.2",
     "mysql": "^2.16.0",
     "ramda": "^0.25.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "winston": "^3.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -55,6 +57,7 @@
     "eslint-plugin-react": "^7.10.0",
     "eslint-plugin-standard": "^3.1.0",
     "mocha": "^5.2.0",
+    "nyc": "^12.0.2",
     "sinon": "^6.1.4"
   }
 }

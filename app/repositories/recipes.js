@@ -8,4 +8,4 @@ function getRecipes () {
 
 export default {
   get: getRecipes
-}
+};

@@ -1,5 +1,7 @@
-import R from 'ramda';
+function handleDbError (err) {
+  throw err;
+}
 
 export default {
-  handleDbError: R.throw
-}
+  handleDbError
+};

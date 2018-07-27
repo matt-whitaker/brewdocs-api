@@ -1,14 +1,17 @@
-import recipesRepository from '../../../app/repositories/recipes';
+import recipesService from '../../../app/services/recipes';
 import recipesController from '../../../app/controllers/api/recipes';
 
 describe('recipes controller', () => {
-  const sandbox = sinon.createSandbox();
+  let sandbox, mockRecipesService;
 
   beforeEach(() => {
-    sandbox.reset();
+    sandbox = sinon.createSandbox();
+    mockRecipesService = sandbox.mock(recipesService);
   });
 
-  const mockRecipesRepository = sandbox.mock(recipesRepository);
+  afterEach(() => {
+    sandbox.restore();
+  });
 
   describe('#list', () => {
     it('resolves with an empty list', () => {
@@ -20,15 +23,15 @@ describe('recipes controller', () => {
       };
       const mockResponse = sandbox.mock(response);
 
-      mockRecipesRepository.expects('get').resolves([]);
+      mockRecipesService.expects('list').resolves([]);
       mockResponse.expects('status').withArgs(200).returns(response);
       mockResponse.expects('json').withArgs([]);
 
       return recipesController.list({}, response)
         .then(() => {
-          mockRecipesRepository.verify();
+          mockRecipesService.verify();
           mockResponse.verify();
         });
     });
-  })
+  });
 });

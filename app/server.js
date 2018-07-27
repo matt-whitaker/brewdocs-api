@@ -9,7 +9,7 @@ if (cluster.isMaster) {
   console.log(`Master ${process.pid} is starting...`);
 
   for (let i = 0; i < spawnCount; i++) {
-    cluster.fork({CLUSTER_SPAWN_COUNT: spawnCount});
+    cluster.fork({ CLUSTER_SPAWN_COUNT: spawnCount });
   }
 
   cluster.on('exit', (worker, code, signal) => {

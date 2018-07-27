@@ -1,21 +1,27 @@
 import database from '../../app/utils/database';
-import repository from '../../app/repositories/recipes';
+import recipesRepository from '../../app/repositories/recipes';
 
 describe('recipes repository', () => {
-  const sandbox = sinon.createSandbox();
+  let sandbox, mockDatabase;
 
   beforeEach(() => {
-    sandbox.reset();
+    sandbox = sinon.createSandbox();
+    mockDatabase = sandbox.mock(database);
   });
 
-  const mockDatabase = sandbox.mock(database);
+  afterEach(() => {
+    sandbox.restore();
+  });
 
   describe('#get', () => {
-    it('can resolve with an empty list', () => {
+    beforeEach(() => {
       mockDatabase.expects('from').withArgs('recipes').returns(database);
+    });
+
+    it('can resolve with an empty list', () => {
       mockDatabase.expects('select').withArgs('*').resolves([]);
 
-      return repository.get()
+      return recipesRepository.get()
         .then((recipes) => {
           expect(recipes).to.eql([]);
           mockDatabase.verify();
@@ -23,18 +29,27 @@ describe('recipes repository', () => {
     });
 
     it('can resolve with an a populated list', () => {
-      mockDatabase.expects('from').withArgs('recipes').returns(database);
-      mockDatabase.expects('select').withArgs('*').resolves([{id: 1}]);
+      mockDatabase.expects('select').withArgs('*').resolves([{ id: 1 }, { id: 2 }]);
 
-      return repository.get()
+      return recipesRepository.get()
         .then((recipes) => {
-          expect(recipes).to.eql([{id: 1}, {id: 2}]);
+          expect(recipes).to.eql([{ id: 1 }, { id: 2 }]);
           mockDatabase.verify();
         });
     });
 
     it('can capture a database error', () => {
-      throw (new Error('not tested'));
-    })
+      const error = new Error();
+      mockDatabase.expects('select').withArgs('*').rejects(error);
+
+      return recipesRepository.get()
+        .then(failResolve)
+        .catch(({ name, message }) => {
+          expect({ name, message }).to.eql({
+            name: 'DatabaseError',
+            message: 'There was an error with the database.'
+          });
+        });
+    });
   });
 });

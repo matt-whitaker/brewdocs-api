@@ -35,7 +35,7 @@ function createApp () {
       console.log(`Express started on port ${port}`);
       resolve(app);
     });
-  })
+  });
 }
 
 export default {

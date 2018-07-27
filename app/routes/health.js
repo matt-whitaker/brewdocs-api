@@ -1,4 +1,4 @@
-import {Router} from 'express';
+import { Router } from 'express';
 import health from '../controllers/health';
 
 function createRouter () {
@@ -11,4 +11,4 @@ function createRouter () {
 
 export default {
   router: createRouter
-}
+};
