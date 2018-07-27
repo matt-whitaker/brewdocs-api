@@ -19,7 +19,9 @@ if (process.CLUSTER) {
     });
   } else {
     console.log(`Worker ${process.pid} is starting...`);
-  }
-}
 
-app.create();
+    app.create();
+  }
+} else {
+  app.create();
+}
