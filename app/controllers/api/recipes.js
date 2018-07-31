@@ -7,7 +7,7 @@ function list (req, res, next) {
 }
 
 function get (req, res, next) {
-  return recipesService.get(req.match.params.slug)
+  return recipesService.get(req.params.slug)
     .then((recipe) => res.status(200).json(recipe))
     .catch(next);
 }

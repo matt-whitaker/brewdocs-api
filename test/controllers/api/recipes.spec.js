@@ -55,15 +55,26 @@ describe('recipes controller', () => {
           mockResponse.verify();
         });
     });
+
+    it('passes along errors', () => {
+      const error = new Error('test');
+      const next = sinon.spy();
+
+      mockRecipesService.expects('list').rejects(error);
+
+      return recipesController.list({}, {}, next)
+        .then(() => {
+          mockRecipesService.verify();
+          expect(next.calledWith(error)).to.be.true;
+        });
+    });
   });
 
   describe('#get', () => {
     it('responds with a recipe', () => {
       const request = {
-        match: {
-          params: {
-            slug: 'test'
-          }
+        params: {
+          slug: 'test'
         }
       };
 
@@ -91,10 +102,8 @@ describe('recipes controller', () => {
     it('passes along errors', () => {
       const error = new Error('test');
       const request = {
-        match: {
-          params: {
-            slug: 'test'
-          }
+        params: {
+          slug: 'test'
         }
       };
 
