@@ -135,10 +135,9 @@ describe('recipes controller', () => {
       const mockResponse = sandbox.mock(response);
 
       mockRecipesService.expects('delete').withArgs('test').resolves(recipesData[0]);
-
       mockResponse.expects('sendStatus').withArgs(204).resolves();
 
-      return recipesController.get(request, response)
+      return recipesController.delete(request, response)
         .then(() => {
           mockRecipesService.verify();
           mockResponse.verify();
