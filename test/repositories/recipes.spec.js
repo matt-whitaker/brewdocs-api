@@ -43,11 +43,21 @@ describe('recipes repository', () => {
 
     it('can retrieve a list of recipes by query', () => {
       mockDatabase.expects('select').withArgs('*').returns(database);
-      mockDatabase.expects('where').withArgs(sinon.match({ slug: 'test' })).resolves(recipesData[0]);
+      mockDatabase.expects('where').withArgs(sinon.match({ slug: 'test' })).resolves(recipesData);
 
       return recipesRepository.find({ slug: 'test' })
         .then((recipe) => {
-          expect(recipe).to.eql(recipesData[0]);
+          expect(recipe).to.eql(recipesData);
+          mockDatabase.verify();
+        });
+    });
+
+    it('can retrieve a list of recipes by empty query', () => {
+      mockDatabase.expects('select').withArgs('*').resolves(recipesData);
+
+      return recipesRepository.find({})
+        .then((recipe) => {
+          expect(recipe).to.eql(recipesData);
           mockDatabase.verify();
         });
     });
