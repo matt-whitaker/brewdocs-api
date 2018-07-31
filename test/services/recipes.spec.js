@@ -91,6 +91,15 @@ describe('recipes service', () => {
   });
 
   describe('#delete', () => {
+    it('can delete a recipe', () => {
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([recipesData[0]]);
+      mockRecipesRepository.expects('delete').withArgs({ slug: 'test' }).resolves();
+
+      return recipesService.delete('test')
+        .then(() => {
+          mockRecipesRepository.verify();
+        });
+    });
     it('can reject if empty', (done) => {
       mockRecipesRepository.expects('find').resolves([]);
       mockRecipesRepository.expects('delete').never();
