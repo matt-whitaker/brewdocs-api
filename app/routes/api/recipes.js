@@ -6,6 +6,7 @@ function createRouter () {
 
   router.get('/', recipes.list);
   router.get('/:slug', recipes.get);
+  router.delete('/:slug', recipes.delete);
 
   return router;
 }

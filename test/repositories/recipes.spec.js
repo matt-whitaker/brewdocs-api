@@ -13,12 +13,12 @@ describe('recipes repository', () => {
 
   afterEach(() => {
     sandbox.restore();
+    sandbox.reset();
   });
 
   describe('#get', () => {
     beforeEach(() => {
       mockDatabase.expects('from').withArgs('recipes').returns(database);
-      mockDatabase.where = function () {};
     });
 
     it('can retrieve and empty list', () => {
@@ -67,6 +67,35 @@ describe('recipes repository', () => {
       mockDatabase.expects('select').withArgs('*').rejects(error);
 
       recipesRepository.find()
+        .catch(({ name, message }) => {
+          expect({ name, message }).to.eql({
+            name: 'DatabaseError',
+            message: 'There was a database error.'
+          });
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('delete', () => {
+    beforeEach(() => {
+      mockDatabase.expects('from').withArgs('recipes').returns(database);
+    });
+
+    it('can delete by query', () => {
+      mockDatabase.expects('del').resolves();
+      mockDatabase.expects('where').withArgs(sinon.match({ slug: 'test' })).returns(database);
+
+      return recipesRepository.delete({ slug: 'test' })
+        .then(() => {
+          mockDatabase.verify();
+        });
+    });
+
+    // Protect against wild full deletes
+    it('errors when empty query', (done) => {
+      recipesRepository.delete({})
         .catch(({ name, message }) => {
           expect({ name, message }).to.eql({
             name: 'DatabaseError',

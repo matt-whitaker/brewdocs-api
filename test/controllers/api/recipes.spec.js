@@ -118,4 +118,49 @@ describe('recipes controller', () => {
         });
     });
   });
+
+  describe('#delete', () => {
+    it('responds ok', () => {
+      const request = {
+        params: {
+          slug: 'test'
+        }
+      };
+
+      const response = {
+        sendStatus () {
+        }
+      };
+
+      const mockResponse = sandbox.mock(response);
+
+      mockRecipesService.expects('delete').withArgs('test').resolves(recipesData[0]);
+      mockResponse.expects('sendStatus').withArgs(204).resolves();
+
+      return recipesController.delete(request, response)
+        .then(() => {
+          mockRecipesService.verify();
+          mockResponse.verify();
+        });
+    });
+
+    it('passes along errors', () => {
+      const error = new Error('test');
+      const request = {
+        params: {
+          slug: 'test'
+        }
+      };
+
+      const next = sinon.spy();
+
+      mockRecipesService.expects('delete').rejects(error);
+
+      return recipesController.delete(request, {}, next)
+        .then(() => {
+          mockRecipesService.verify();
+          expect(next.calledWith(error)).to.be.true;
+        });
+    });
+  });
 });

@@ -32,7 +32,6 @@ describe('recipes service', () => {
       return recipesService.list()
         .then((recipes) => {
           expect(recipes).to.eql(recipesData);
-          mockRecipesRepository.verify();
         });
     });
 
@@ -50,6 +49,18 @@ describe('recipes service', () => {
   });
 
   describe('#get', () => {
+    it('can resolve with a recipe', () => {
+      mockRecipesRepository.expects('find')
+        .withArgs(sinon.match({ slug: 'test' }))
+        .resolves([recipesData[0]]);
+
+      return recipesService.get('test')
+        .then((recipe) => {
+          expect(recipe).to.eql(recipesData[0]);
+          mockRecipesRepository.verify();
+        });
+    });
+
     it('can reject if empty', (done) => {
       mockRecipesRepository.expects('find').resolves([]);
 
@@ -66,23 +77,50 @@ describe('recipes service', () => {
         .catch(done);
     });
 
-    it('can resolve with a recipe', () => {
-      mockRecipesRepository.expects('find')
-        .withArgs(sinon.match({ slug: 'test' }))
-        .resolves([recipesData[0]]);
+    it('can bubble an error', (done) => {
+      const error = new Error();
+      mockRecipesRepository.expects('find').rejects(error);
 
-      return recipesService.get('test')
-        .then((recipe) => {
-          expect(recipe).to.eql(recipesData[0]);
+      recipesService.get('test')
+        .catch((err) => {
+          expect(err).to.eql(error);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('#delete', () => {
+    it('can delete a recipe', () => {
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([recipesData[0]]);
+      mockRecipesRepository.expects('delete').withArgs({ slug: 'test' }).resolves();
+
+      return recipesService.delete('test')
+        .then(() => {
           mockRecipesRepository.verify();
         });
+    });
+    it('can reject if empty', (done) => {
+      mockRecipesRepository.expects('find').resolves([]);
+      mockRecipesRepository.expects('delete').never();
+
+      recipesService.get('test')
+        .catch((e) => {
+          expect(e.output.payload).to.eql({
+            statusCode: 404,
+            error: 'Not Found',
+            message: 'Recipe "test" not found.'
+          });
+          expect(e.isBoom).to.be.true;
+          mockRecipesRepository.verify();
+          done();
+        })
+        .catch(done);
     });
 
     it('can bubble an error', (done) => {
       const error = new Error();
-      mockRecipesRepository.expects('find')
-        .withArgs(sinon.match({ slug: 'test' }))
-        .rejects(error);
+      mockRecipesRepository.expects('find').rejects(error);
 
       recipesService.get('test')
         .catch((err) => {
