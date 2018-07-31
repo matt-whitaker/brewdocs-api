@@ -1,11 +1,11 @@
 import database from '../utils/database';
 import repositoryUtils from '../utils/repository';
 
-function getRecipes () {
-  return database.from('recipes').select('*')
+function findRecipes (query = {}) {
+  const trx = database.from('recipes').select('*');
+
+  return ((typeof query === 'object' && Object.keys(query).length) ? trx.where(query) : trx)
     .catch(repositoryUtils.handleDbError);
 }
 
-export default {
-  get: getRecipes
-};
+export default { find: findRecipes };

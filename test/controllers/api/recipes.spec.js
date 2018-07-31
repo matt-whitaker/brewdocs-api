@@ -56,4 +56,57 @@ describe('recipes controller', () => {
         });
     });
   });
+
+  describe('#get', () => {
+    it('responds with a recipe', () => {
+      const request = {
+        match: {
+          params: {
+            slug: 'test'
+          }
+        }
+      };
+
+      const response = {
+        status () {
+        },
+        json () {
+        }
+      };
+
+      const mockResponse = sandbox.mock(response);
+
+      mockRecipesService.expects('get').resolves(recipesData[0]);
+
+      mockResponse.expects('status').withArgs(200).returns(response);
+      mockResponse.expects('json').withArgs(recipesData[0]);
+
+      return recipesController.get(request, response)
+        .then(() => {
+          mockRecipesService.verify();
+          mockResponse.verify();
+        });
+    });
+
+    it('passes along errors', () => {
+      const error = new Error('test');
+      const request = {
+        match: {
+          params: {
+            slug: 'test'
+          }
+        }
+      };
+
+      const next = sinon.spy();
+
+      mockRecipesService.expects('get').rejects(error);
+
+      return recipesController.get(request, {}, next)
+        .then(() => {
+          mockRecipesService.verify();
+          expect(next.calledWith(error)).to.be.true;
+        });
+    });
+  });
 });
