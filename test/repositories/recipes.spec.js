@@ -79,6 +79,20 @@ describe('recipes repository', () => {
   });
 
   describe('delete', () => {
+    beforeEach(() => {
+      mockDatabase.expects('from').withArgs('recipes').returns(database);
+    });
+
+    it('can delete by query', () => {
+      mockDatabase.expects('del').resolves();
+      mockDatabase.expects('where').withArgs(sinon.match({ slug: 'test' })).returns(database);
+
+      return recipesRepository.delete({ slug: 'test' })
+        .then(() => {
+          mockDatabase.verify();
+        });
+    });
+
     // Protect against wild full deletes
     it('errors when empty query', (done) => {
       recipesRepository.delete({})
