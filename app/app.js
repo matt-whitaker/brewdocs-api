@@ -1,11 +1,17 @@
-import express from 'express';
 import cors from 'cors';
-import health from './routes/health';
+import express from 'express';
+import { isNil, reject } from 'ramda';
+
 import api from './routes/api';
-import config from 'config';
+import health from './routes/health';
+import error from './utils/error';
+import boom from 'boom';
 
-const version = config.get('apiVersion');
+const rejectNil = reject(isNil);
 
+/**
+ * Creates the express app and resolves with it
+ */
 function createApp () {
   return new Promise((resolve) => {
     const app = express();
@@ -16,17 +22,29 @@ function createApp () {
     /**
      * CORS
      */
-    app.use(cors());
+    const corsOptions = rejectNil({ origin: process.env.ORIGIN });
+    app.options('*', cors(corsOptions));
+    app.use(cors(corsOptions));
 
     /**
      * Setup API router
      */
-    app.use(`/api/${version}`, api.router());
+    app.use(`/api/v1`, api.router());
 
     /**
      * Setup health check
      */
     app.use('/health', health.router());
+
+    /**
+     * Catch the rest
+     */
+    app.use('*', (rs, rq, next) => next(boom.notFound()));
+
+    /**
+     * Error middleware
+     */
+    app.use(error.middleware());
 
     /**
      * Start the application

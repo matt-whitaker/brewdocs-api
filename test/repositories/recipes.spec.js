@@ -78,7 +78,41 @@ describe('recipes repository', () => {
     });
   });
 
-  describe('delete', () => {
+  describe('#create', () => {
+    beforeEach(() => {
+      mockDatabase.expects('into').withArgs('recipes').returns(database);
+    });
+
+    it('can insert a recipe', () => {
+      mockDatabase.expects('insert').withArgs(sinon.match({ name: 'Test' })).resolves([1]);
+
+      return recipesRepository.create({ name: 'Test' })
+        .then((recipe) => {
+          expect(recipe).to.eql({
+            id: 1,
+            name: 'Test'
+          });
+          mockDatabase.verify();
+        });
+    });
+
+    it('can capture a database error', (done) => {
+      const error = new Error();
+      mockDatabase.expects('insert').withArgs(sinon.match({ name: 'Test' })).rejects(error);
+
+      recipesRepository.create({ name: 'Test' })
+        .catch(({ name, message }) => {
+          expect({ name, message }).to.eql({
+            name: 'DatabaseError',
+            message: 'There was a database error.'
+          });
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('#delete', () => {
     beforeEach(() => {
       mockDatabase.expects('from').withArgs('recipes').returns(database);
     });
@@ -93,9 +127,25 @@ describe('recipes repository', () => {
         });
     });
 
-    // Protect against wild full deletes
+    // Protect against wild deletes
     it('errors when empty query', (done) => {
       recipesRepository.delete({})
+        .catch(({ name, message }) => {
+          expect({ name, message }).to.eql({
+            name: 'DatabaseError',
+            message: 'There was a database error.'
+          });
+          done();
+        })
+        .catch(done);
+    });
+
+    it('can capture a database error', (done) => {
+      const error = new Error();
+      mockDatabase.expects('del').rejects(error);
+      mockDatabase.expects('where').returns(database);
+
+      recipesRepository.delete()
         .catch(({ name, message }) => {
           expect({ name, message }).to.eql({
             name: 'DatabaseError',

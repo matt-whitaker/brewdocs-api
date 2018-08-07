@@ -16,27 +16,7 @@ describe('recipes controller', () => {
   });
 
   describe('#list', () => {
-    it('responds with an empty list', () => {
-      const response = {
-        status () {
-        },
-        json () {
-        }
-      };
-      const mockResponse = sandbox.mock(response);
-
-      mockRecipesService.expects('list').resolves([]);
-      mockResponse.expects('status').withArgs(200).returns(response);
-      mockResponse.expects('json').withArgs([]);
-
-      return recipesController.list({}, response)
-        .then(() => {
-          mockRecipesService.verify();
-          mockResponse.verify();
-        });
-    });
-
-    it('responds with a populated list', () => {
+    it('responds with a list', () => {
       const response = {
         status () {
         },
@@ -112,6 +92,55 @@ describe('recipes controller', () => {
       mockRecipesService.expects('get').rejects(error);
 
       return recipesController.get(request, {}, next)
+        .then(() => {
+          mockRecipesService.verify();
+          expect(next.calledWith(error)).to.be.true;
+        });
+    });
+  });
+
+  describe('#create', () => {
+    it('responds with a created recipe', () => {
+      const recipe = { name: 'Test' };
+
+      const request = {
+        body: recipe
+      };
+
+      const response = {
+        status () {
+        },
+        json () {
+        }
+      };
+
+      const mockResponse = sandbox.mock(response);
+
+      mockResponse.expects('status').withArgs(200).returns(response);
+      mockResponse.expects('json').withArgs(sinon.match(recipe)).resolves();
+
+      mockRecipesService.expects('create').withArgs(sinon.match(recipe)).resolves(recipe);
+
+      return recipesController.create(request, response)
+        .then(() => {
+          mockRecipesService.verify();
+          mockResponse.verify();
+        });
+    });
+
+    it('passes along errors', () => {
+      const error = new Error('test');
+      const request = {
+        body: {
+          name: 'Test'
+        }
+      };
+
+      const next = sinon.spy();
+
+      mockRecipesService.expects('create').rejects(error);
+
+      return recipesController.create(request, {}, next)
         .then(() => {
           mockRecipesService.verify();
           expect(next.calledWith(error)).to.be.true;

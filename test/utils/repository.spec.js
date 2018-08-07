@@ -1,6 +1,6 @@
 import repositoryUtils from '../../app/utils/repository';
 
-describe('service utils', () => {
+describe('repository utils', () => {
   describe('#handleDbError', () => {
     it('throws generic db error', () => {
       const error = new Error('Test');

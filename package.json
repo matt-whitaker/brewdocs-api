@@ -14,8 +14,9 @@
     "server:dev": "nodemon --require dotenv/config lib/server.js",
     "build": "babel app --out-dir lib",
     "build:dev": "babel --watch --skip-initial-build app --out-dir lib",
-    "mysql:start": "./bin/mysql-start.sh && knex migrate:latest",
+    "mysql:start": "./bin/mysql-start.sh",
     "mysql:stop": "./bin/mysql-stop.sh",
+    "mysql:restart": "npm run mysql:stop && npm run mysql:start",
     "mysql:seed": "knex seed:run",
     "mysql:reset": "knex migrate:rollback && knex migrate:latest",
     "setup:dev": "npm install && npm-run-all mysql:stop mysql:start build"
@@ -32,16 +33,19 @@
   "homepage": "https://github.com/matt-whitaker/brewdocs-api#readme",
   "dependencies": {
     "bluebird": "^3.5.1",
+    "body-parser": "^1.18.3",
     "boom": "^7.2.0",
     "cluster": "^0.7.7",
     "config": "^1.31.0",
     "cors": "^2.8.4",
     "deep-equal": "^1.0.1",
     "express": "^4.16.3",
+    "joi": "^13.5.2",
     "knex": "^0.15.2",
     "mysql": "^2.16.0",
     "ramda": "^0.25.0",
     "request-promise": "^4.2.2",
+    "slug": "^0.9.1",
     "winston": "^3.0.0"
   },
   "devDependencies": {

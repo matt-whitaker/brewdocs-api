@@ -1,9 +1,11 @@
+import { json } from 'body-parser';
 import { Router } from 'express';
 import recipes from './recipes';
 
 function createRouter () {
   const router = new Router();
 
+  router.use(json());
   router.use('/recipes', recipes.router());
 
   return router;

@@ -90,6 +90,59 @@ describe('recipes service', () => {
     });
   });
 
+  describe('#create', () => {
+    it('can create a recipe', () => {
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([]);
+      mockRecipesRepository.expects('create').withArgs({
+        name: 'Test',
+        slug: 'test',
+        description: null
+      }).resolves({
+        id: 1,
+        name: 'Test',
+        slug: 'test'
+      });
+
+      return recipesService.create({ name: 'Test' })
+        .then((recipe) => {
+          expect(recipe).to.eql({
+            id: 1,
+            name: 'Test',
+            slug: 'test'
+          });
+        });
+    });
+
+    it('can conflict with a recipe', (done) => {
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([recipesData[0]]);
+
+      recipesService.create({ name: 'test' })
+        .catch((err) => {
+          expect(err.output.payload).to.eql({
+            statusCode: 409,
+            error: 'Conflict',
+            message: 'Recipe "test" already exists.'
+          });
+          expect(err.isBoom).to.be.true;
+          mockRecipesRepository.verify();
+          done();
+        })
+        .catch(done);
+    });
+
+    it('can bubble an error', (done) => {
+      const error = new Error();
+      mockRecipesRepository.expects('find').rejects(error);
+
+      recipesService.create({})
+        .catch((err) => {
+          expect(err).to.eql(error);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
   describe('#delete', () => {
     it('can delete a recipe', () => {
       mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([recipesData[0]]);
