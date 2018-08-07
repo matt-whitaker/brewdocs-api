@@ -12,6 +12,12 @@ function findRecipes (query = {}) {
   return q.catch(repositoryUtils.handleDbError);
 }
 
+function createRecipe (data) {
+  return database.into('recipes').insert(data)
+    .then(([id]) => ({ ...data, id }))
+    .catch(repositoryUtils.handleDbError);
+}
+
 function deleteRecipe (query = {}) {
   if (typeof query === 'object' && Object.keys(query).length) {
     return database.from('recipes').where(query).del()
@@ -22,4 +28,8 @@ function deleteRecipe (query = {}) {
     .catch(repositoryUtils.handleDbError);
 }
 
-export default { find: findRecipes, delete: deleteRecipe };
+export default {
+  find: findRecipes,
+  create: createRecipe,
+  delete: deleteRecipe
+};

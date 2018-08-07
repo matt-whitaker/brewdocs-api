@@ -12,10 +12,21 @@ function getRecipe (req, res, next) {
     .catch(next);
 }
 
+function createRecipe (req, res, next) {
+  return recipesService.create(req.body)
+    .then((recipe) => res.status(200).json(recipe))
+    .catch(next);
+}
+
 function deleteRecipe (req, res, next) {
   return recipesService.delete(req.params.slug)
     .then(() => res.sendStatus(204))
     .catch(next);
 }
 
-export default { list: listRecipes, get: getRecipe, delete: deleteRecipe };
+export default {
+  list: listRecipes,
+  get: getRecipe,
+  create: createRecipe,
+  delete: deleteRecipe
+};

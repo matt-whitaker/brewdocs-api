@@ -1,5 +1,4 @@
 {
-  "apiVersion": "v1",
   "database": {
     "client": "mysql",
     "pool": { "min": 0, "max": 10 },

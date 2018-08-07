@@ -1,12 +1,15 @@
 import Promise from 'bluebird';
 import boom from 'boom';
-import { ifElse, isEmpty, head, when } from 'ramda';
+import slugify from 'slug';
+import { head, ifElse, isEmpty, when } from 'ramda';
 
 import recipesRepository from './../repositories/recipes';
+import recipeValidator from './../validators/recipe';
 import serviceUtils from '../utils/service';
 
 function listRecipes () {
-  return recipesRepository.find().catch(serviceUtils.handleError);
+  return recipesRepository.find()
+    .catch(serviceUtils.handleError);
 }
 
 function getRecipe (slug) {
@@ -15,6 +18,20 @@ function getRecipe (slug) {
 
   return recipesRepository.find({ slug })
     .then(handleEmpty)
+    .catch(serviceUtils.handleError);
+}
+
+function createRecipe (data) {
+  const slug = slugify(data.slug || data.name || '', { lower: true });
+  const conflict = () => Promise.reject(boom.conflict(`Recipe "${slug}" already exists.`));
+  const handleFound = when(head, conflict);
+
+  const validateRecipe = recipeValidator.validate({ slug, id: null });
+
+  return recipesRepository.find({ slug })
+    .then(handleFound)
+    .then(() => validateRecipe(data))
+    .then((data) => recipesRepository.create(data))
     .catch(serviceUtils.handleError);
 }
 
@@ -28,4 +45,9 @@ function deleteRecipe (slug) {
     .catch(serviceUtils.handleError);
 }
 
-export default { list: listRecipes, get: getRecipe, delete: deleteRecipe };
+export default {
+  list: listRecipes,
+  get: getRecipe,
+  create: createRecipe,
+  delete: deleteRecipe
+};

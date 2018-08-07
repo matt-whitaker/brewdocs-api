@@ -5,6 +5,7 @@ function createRouter () {
   const router = new Router();
 
   router.get('/', recipes.list);
+  router.post('/', recipes.create);
   router.get('/:slug', recipes.get);
   router.delete('/:slug', recipes.delete);
 
