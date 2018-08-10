@@ -116,7 +116,7 @@ describe('recipes controller', () => {
 
       const mockResponse = sandbox.mock(response);
 
-      mockResponse.expects('status').withArgs(200).returns(response);
+      mockResponse.expects('status').withArgs(201).returns(response);
       mockResponse.expects('json').withArgs(sinon.match(recipe)).resolves();
 
       mockRecipesService.expects('create').withArgs(sinon.match(recipe)).resolves(recipe);

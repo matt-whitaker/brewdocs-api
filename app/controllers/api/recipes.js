@@ -14,6 +14,12 @@ function getRecipe (req, res, next) {
 
 function createRecipe (req, res, next) {
   return recipesService.create(req.body)
+    .then((recipe) => res.status(201).json(recipe))
+    .catch(next);
+}
+
+function updateRecipe (req, res, next) {
+  return recipesService.update(req.params.slug, req.body)
     .then((recipe) => res.status(200).json(recipe))
     .catch(next);
 }
@@ -28,5 +34,6 @@ export default {
   list: listRecipes,
   get: getRecipe,
   create: createRecipe,
+  update: updateRecipe,
   delete: deleteRecipe
 };
