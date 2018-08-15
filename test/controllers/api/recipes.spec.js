@@ -131,9 +131,7 @@ describe('recipes controller', () => {
     it('passes along errors', () => {
       const error = new Error('test');
       const request = {
-        body: {
-          name: 'Test'
-        }
+        body: {}
       };
 
       const next = sinon.spy();
@@ -141,6 +139,59 @@ describe('recipes controller', () => {
       mockRecipesService.expects('create').rejects(error);
 
       return recipesController.create(request, {}, next)
+        .then(() => {
+          mockRecipesService.verify();
+          expect(next.calledWith(error)).to.be.true;
+        });
+    });
+  });
+
+  describe('#update', () => {
+    it('responds with an updated recipe', () => {
+      const recipe = { id: 1, name: 'Test', slug: 'test' };
+
+      const request = {
+        body: recipe,
+        params: {
+          slug: 'test'
+        }
+      };
+
+      const response = {
+        status () {
+        },
+        json () {
+        }
+      };
+
+      const mockResponse = sandbox.mock(response);
+
+      mockResponse.expects('status').withArgs(200).returns(response);
+      mockResponse.expects('json').withArgs(sinon.match(recipe)).resolves();
+
+      mockRecipesService.expects('update').withArgs('test', sinon.match(recipe)).resolves(recipe);
+
+      return recipesController.update(request, response)
+        .then(() => {
+          mockRecipesService.verify();
+          mockResponse.verify();
+        });
+    });
+
+    it('passes along errors', () => {
+      const error = new Error('test');
+      const request = {
+        params: {
+          slug: 'test'
+        },
+        body: {}
+      };
+
+      const next = sinon.spy();
+
+      mockRecipesService.expects('update').rejects(error);
+
+      return recipesController.update(request, {}, next)
         .then(() => {
           mockRecipesService.verify();
           expect(next.calledWith(error)).to.be.true;

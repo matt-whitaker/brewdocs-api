@@ -52,7 +52,7 @@ function updateRecipe (_slug, data) {
   const newIsFound = pipe(prop('newRecipe'), head);
   const handleNewFound = when(newIsFound, conflict(slug));
 
-  const validate = (recipe) => recipeValidator.validate({ slug, id: recipe.id })(recipe);
+  const validate = (recipe) => recipeValidator.validate({ slug, id: recipe.id })(data);
   const update = (recipe) => recipesRepository.update(_slugQuery, recipe);
 
   return Promise.props({

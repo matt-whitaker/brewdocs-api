@@ -112,6 +112,54 @@ describe('recipes repository', () => {
     });
   });
 
+  describe('#update', () => {
+    beforeEach(() => {
+      mockDatabase.expects('from').withArgs('recipes').returns(database);
+    });
+
+    it('can update a recipe', () => {
+      mockDatabase.expects('where').withArgs(sinon.match({ id: 1 })).returns(database);
+      mockDatabase.expects('update').withArgs(sinon.match({ name: 'Test' })).resolves();
+
+      return recipesRepository.update({ id: 1 }, { id: 1, name: 'Test' })
+        .then((recipe) => {
+          expect(recipe).to.eql({
+            id: 1,
+            name: 'Test'
+          });
+          mockDatabase.verify();
+        });
+    });
+
+    it('can capture a database error', (done) => {
+      const error = new Error();
+      mockDatabase.expects('where').returns(database);
+      mockDatabase.expects('update').withArgs().rejects(error);
+
+      recipesRepository.update({ id: 1 }, { id: 1, name: 'Test' })
+        .catch(({ name, message }) => {
+          expect({ name, message }).to.eql({
+            name: 'DatabaseError',
+            message: 'There was a database error.'
+          });
+          done();
+        })
+        .catch(done);
+    });
+
+    it('errors when empty query', (done) => {
+      recipesRepository.update({}, { id: 1 })
+        .catch(({ name, message }) => {
+          expect({ name, message }).to.eql({
+            name: 'DatabaseError',
+            message: 'There was a database error.'
+          });
+          done();
+        })
+        .catch(done);
+    });
+  });
+
   describe('#delete', () => {
     beforeEach(() => {
       mockDatabase.expects('from').withArgs('recipes').returns(database);

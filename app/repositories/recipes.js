@@ -21,6 +21,7 @@ function createRecipe (data) {
 function updateRecipe (query = {}, data) {
   if (typeof query === 'object' && Object.keys(query).length) {
     return database.from('recipes').where(query).update(data)
+      .then(() => data)
       .catch(repositoryUtils.handleDbError);
   }
 

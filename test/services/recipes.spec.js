@@ -143,6 +143,85 @@ describe('recipes service', () => {
     });
   });
 
+  describe('#update', () => {
+    it('can update a recipe', () => {
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([recipesData[0]]);
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test-2' }).resolves([]);
+
+      mockRecipesRepository.expects('update').withArgs({
+       slug: 'test',
+      },{
+        id: 1,
+        name: 'Test 2',
+        slug: 'test-2',
+        description: 'test 2'
+      }).resolves({
+        id: 1,
+        name: 'Test 2',
+        slug: 'test-2',
+        description: 'test 2'
+      });
+
+      return recipesService.update('test', { id: 1, name: 'Test 2', description: 'test 2' })
+        .then((recipe) => {
+          expect(recipe).to.eql({
+            id: 1,
+            name: 'Test 2',
+            slug: 'test-2',
+            description: 'test 2'
+          });
+        });
+    });
+
+    it('can throw when not found', (done) => {
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([]);
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test-2' }).resolves([]);
+
+      recipesService.update('test', { name: 'Test 2' })
+        .catch((err) => {
+          expect(err.output.payload).to.eql({
+            statusCode: 404,
+            error: 'Not Found',
+            message: 'Recipe "test" not found.'
+          });
+          expect(err.isBoom).to.be.true;
+          mockRecipesRepository.verify();
+          done();
+        })
+        .catch(done);
+    });
+
+    it('can conflict with a recipe', (done) => {
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([recipesData[0]]);
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test-2' }).resolves([recipesData[0]]);
+
+      recipesService.update('test', { name: 'Test 2' })
+        .catch((err) => {
+          expect(err.output.payload).to.eql({
+            statusCode: 409,
+            error: 'Conflict',
+            message: 'Recipe "test-2" already exists.'
+          });
+          expect(err.isBoom).to.be.true;
+          mockRecipesRepository.verify();
+          done();
+        })
+        .catch(done);
+    });
+
+    it('can bubble an error', (done) => {
+      const error = new Error();
+      mockRecipesRepository.expects('find').rejects(error);
+
+      recipesService.update('test', { })
+        .catch((err) => {
+          expect(err).to.eql(error);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
   describe('#delete', () => {
     it('can delete a recipe', () => {
       mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([recipesData[0]]);
@@ -153,6 +232,7 @@ describe('recipes service', () => {
           mockRecipesRepository.verify();
         });
     });
+
     it('can reject if empty', (done) => {
       mockRecipesRepository.expects('find').resolves([]);
       mockRecipesRepository.expects('delete').never();
