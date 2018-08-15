@@ -149,8 +149,8 @@ describe('recipes service', () => {
       mockRecipesRepository.expects('find').withArgs({ slug: 'test-2' }).resolves([]);
 
       mockRecipesRepository.expects('update').withArgs({
-       slug: 'test',
-      },{
+        slug: 'test'
+      }, {
         id: 1,
         name: 'Test 2',
         slug: 'test-2',
