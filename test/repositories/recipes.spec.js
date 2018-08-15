@@ -1,7 +1,7 @@
 import database from '../../app/utils/database';
 import recipesRepository from '../../app/repositories/recipes';
 
-import recipesData from '../../data/recipes';
+import recipesData from '../../db/data/recipes';
 
 describe('recipes repository', () => {
   let sandbox, mockDatabase;

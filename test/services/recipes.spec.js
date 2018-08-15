@@ -2,7 +2,7 @@ import { omit } from 'ramda';
 import recipesRepository from '../../app/repositories/recipes';
 import recipesService from '../../app/services/recipes';
 
-import recipesData from '../../data/recipes';
+import recipesData from '../../db/data/recipes';
 
 describe('recipes service', () => {
   let sandbox, mockRecipesRepository;

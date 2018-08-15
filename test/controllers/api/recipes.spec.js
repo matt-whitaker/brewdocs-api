@@ -1,7 +1,7 @@
 import recipesService from '../../../app/services/recipes';
 import recipesController from '../../../app/controllers/api/recipes';
 
-import recipesData from '../../../data/recipes';
+import recipesData from '../../../db/data/recipes';
 
 describe('recipes controller', () => {
   let sandbox, mockRecipesService;

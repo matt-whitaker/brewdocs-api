@@ -4,8 +4,8 @@
   "description": "REST API for brewdocs",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint ./app ./test ./migrations",
-    "lint:fix": "eslint --fix ./app ./test ./migrations",
+    "lint": "eslint ./app ./test ./db",
+    "lint:fix": "eslint --fix ./app ./test ./db",
     "pretest": "npm run lint",
     "test": "nyc mocha --file test/setup.js --recursive \"test/**/*.spec.js\"",
     "start": "npm run server",
