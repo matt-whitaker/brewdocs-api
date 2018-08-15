@@ -18,6 +18,17 @@ function createRecipe (data) {
     .catch(repositoryUtils.handleDbError);
 }
 
+function updateRecipe (query = {}, data) {
+  if (typeof query === 'object' && Object.keys(query).length) {
+    return database.from('recipes').where(query).update(data)
+      .then(() => data)
+      .catch(repositoryUtils.handleDbError);
+  }
+
+  return Promise.reject(new Error('Query is empty.'))
+    .catch(repositoryUtils.handleDbError);
+}
+
 function deleteRecipe (query = {}) {
   if (typeof query === 'object' && Object.keys(query).length) {
     return database.from('recipes').where(query).del()
@@ -31,5 +42,6 @@ function deleteRecipe (query = {}) {
 export default {
   find: findRecipes,
   create: createRecipe,
+  update: updateRecipe,
   delete: deleteRecipe
 };

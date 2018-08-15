@@ -29,7 +29,7 @@ function createApp () {
     /**
      * Setup API router
      */
-    app.use(`/api/v1`, api.router());
+    app.use(`/v1`, api.router());
 
     /**
      * Setup health check
