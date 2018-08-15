@@ -1,3 +1,4 @@
+import { omit } from 'ramda';
 import recipesRepository from '../../app/repositories/recipes';
 import recipesService from '../../app/services/recipes';
 
@@ -50,13 +51,16 @@ describe('recipes service', () => {
 
   describe('#get', () => {
     it('can resolve with a recipe', () => {
-      mockRecipesRepository.expects('find')
-        .withArgs(sinon.match({ slug: 'test' }))
-        .resolves([recipesData[0]]);
+      const recipeData = recipesData[0];
+      const { slug } = recipeData;
 
-      return recipesService.get('test')
+      mockRecipesRepository.expects('find')
+        .withArgs(sinon.match({ slug }))
+        .resolves([recipeData]);
+
+      return recipesService.get(slug)
         .then((recipe) => {
-          expect(recipe).to.eql(recipesData[0]);
+          expect(recipe).to.eql(recipeData);
           mockRecipesRepository.verify();
         });
     });
@@ -92,36 +96,37 @@ describe('recipes service', () => {
 
   describe('#create', () => {
     it('can create a recipe', () => {
-      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([]);
+      const recipeData = recipesData[0];
+      const { slug } = recipeData;
+
+      mockRecipesRepository.expects('find').withArgs({ slug }).resolves([]);
       mockRecipesRepository.expects('create').withArgs({
-        name: 'Test',
-        slug: 'test',
-        description: null
+        ...omit(['id'], recipeData)
       }).resolves({
         id: 1,
-        name: 'Test',
-        slug: 'test'
+        ...recipeData
       });
 
-      return recipesService.create({ name: 'Test' })
+      return recipesService.create(omit(['id'], recipeData))
         .then((recipe) => {
           expect(recipe).to.eql({
-            id: 1,
-            name: 'Test',
-            slug: 'test'
+            ...recipeData
           });
         });
     });
 
     it('can conflict with a recipe', (done) => {
-      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([recipesData[0]]);
+      const recipeData = recipesData[0];
+      const { slug } = recipeData;
 
-      recipesService.create({ name: 'test' })
+      mockRecipesRepository.expects('find').withArgs({ slug }).resolves([recipeData]);
+
+      recipesService.create(recipeData)
         .catch((err) => {
           expect(err.output.payload).to.eql({
             statusCode: 409,
             error: 'Conflict',
-            message: 'Recipe "test" already exists.'
+            message: `Recipe "${slug}" already exists.`
           });
           expect(err.isBoom).to.be.true;
           mockRecipesRepository.verify();
@@ -145,30 +150,33 @@ describe('recipes service', () => {
 
   describe('#update', () => {
     it('can update a recipe', () => {
-      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([recipesData[0]]);
-      mockRecipesRepository.expects('find').withArgs({ slug: 'test-2' }).resolves([]);
+      const recipeData = recipesData[0];
+      const { id, slug } = recipeData;
+
+      mockRecipesRepository.expects('find').withArgs({ slug }).resolves([recipeData]);
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([]);
 
       mockRecipesRepository.expects('update').withArgs({
-        slug: 'test'
+        slug
       }, {
-        id: 1,
-        name: 'Test 2',
-        slug: 'test-2',
-        description: 'test 2'
+        id,
+        name: 'Test',
+        slug: 'test',
+        description: 'test'
       }).resolves({
-        id: 1,
-        name: 'Test 2',
-        slug: 'test-2',
-        description: 'test 2'
+        id,
+        name: 'Test',
+        slug: 'test',
+        description: 'test'
       });
 
-      return recipesService.update('test', { id: 1, name: 'Test 2', description: 'test 2' })
+      return recipesService.update(slug, { id: 1, name: 'Test', description: 'test' })
         .then((recipe) => {
           expect(recipe).to.eql({
-            id: 1,
-            name: 'Test 2',
-            slug: 'test-2',
-            description: 'test 2'
+            id,
+            name: 'Test',
+            slug: 'test',
+            description: 'test'
           });
         });
     });
@@ -192,8 +200,8 @@ describe('recipes service', () => {
     });
 
     it('can conflict with a recipe', (done) => {
-      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([recipesData[0]]);
-      mockRecipesRepository.expects('find').withArgs({ slug: 'test-2' }).resolves([recipesData[0]]);
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([{}]);
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test-2' }).resolves([{}]);
 
       recipesService.update('test', { name: 'Test 2' })
         .catch((err) => {
@@ -224,7 +232,7 @@ describe('recipes service', () => {
 
   describe('#delete', () => {
     it('can delete a recipe', () => {
-      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([recipesData[0]]);
+      mockRecipesRepository.expects('find').withArgs({ slug: 'test' }).resolves([{}]);
       mockRecipesRepository.expects('delete').withArgs({ slug: 'test' }).resolves();
 
       return recipesService.delete('test')
