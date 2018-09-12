@@ -5,6 +5,7 @@ const createError = (name) => (message, data = {}) =>
   Object.assign(new Error(message), { ...data, name });
 
 const errorMiddleware = (options) => (err, req, res, next) => {
+  console.log(err);
   const error = err.isBoom ? err.output.payload : boom.internal().output.payload;
   log.error(error);
   res.status(error.statusCode).json(error);

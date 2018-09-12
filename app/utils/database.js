@@ -1,4 +1,5 @@
 import knex from 'knex';
+import { Model } from 'objection';
 import config from 'config';
 
 const connection = {
@@ -17,5 +18,7 @@ export const knexConfig = {
     ...config.get('database.pool')
   }
 };
+
+Model.knex(connection);
 
 export default knex(knexConfig);

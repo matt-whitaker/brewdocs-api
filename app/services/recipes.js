@@ -2,6 +2,7 @@ import Promise from 'bluebird';
 import boom from 'boom';
 import slugify from 'slug';
 import { prop, pipe, head, ifElse, isEmpty, when } from 'ramda';
+import Recipe from '../models/recipe';
 
 import recipesRepository from './../repositories/recipes';
 import recipeValidator from './../validators/recipe';
@@ -11,8 +12,8 @@ const notFound = (slug) => () => Promise.reject(boom.notFound(`Recipe "${slug}" 
 const conflict = (slug) => () => Promise.reject(boom.conflict(`Recipe "${slug}" already exists.`));
 
 function listRecipes () {
-  return recipesRepository.find()
-    .catch(serviceUtils.handleError);
+  return Recipe.query();
+    // .catch(serviceUtils.handleError);
 }
 
 function getRecipe (slug) {

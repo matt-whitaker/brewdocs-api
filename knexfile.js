@@ -7,9 +7,9 @@ const { knexConfig } = require('./app/utils/database.js');
 
 module.exports = Object.assign(clone(knexConfig), {
   migrations: {
-    directory: './data/migrations'
+    directory: './db/migrations'
   },
   seeds: {
-    directory: './data/seeds'
+    directory: './db/seeds'
   }
 });
