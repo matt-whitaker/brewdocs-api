@@ -1,88 +1,114 @@
 import Promise from 'bluebird';
 import boom from 'boom';
 import slugify from 'slug';
-import { prop, pipe, head, ifElse, isEmpty, when } from 'ramda';
-import Recipe from '../models/recipe';
+import uuid from "uuid";
+import { head, ifElse, isEmpty, when } from 'ramda';
 
+import Recipe from '../models/Recipe';
 import recipesRepository from './../repositories/recipes';
-import recipeValidator from './../validators/recipe';
-import serviceUtils from '../utils/service';
+import { handleError } from '../utils/service';
 
 const notFound = (slug) => () => Promise.reject(boom.notFound(`Recipe "${slug}" not found.`));
 const conflict = (slug) => () => Promise.reject(boom.conflict(`Recipe "${slug}" already exists.`));
 
-function listRecipes () {
-  return Recipe.query();
-    // .catch(serviceUtils.handleError);
-}
+const service = {
+  listRecipes () {
+    const correlationId = this._correlation || uuid.v4();
 
-function getRecipe (slug) {
-  const handleEmpty = ifElse(isEmpty, notFound(slug), head);
+    return recipesRepository
+      .correlate(correlationId)
+      .findRecipes()
+      .catch(handleError);
+  },
 
-  return recipesRepository.find({ slug })
-    .then(handleEmpty)
-    .catch(serviceUtils.handleError);
-}
+  getRecipe (slug) {
+    const correlationId = this._correlation || uuid.v4();
+    const handleEmpty = ifElse(isEmpty, notFound(slug), head);
 
-function createRecipe (data) {
-  const slug = slugify(data.slug || data.name || '', { lower: true });
-  const handleFound = when(head, conflict(slug));
+    return recipesRepository
+      .correlate(correlationId)
+      .findRecipes({ slug })
+      .then(handleEmpty)
+      .catch(handleError);
+  },
 
-  const validateRecipe = recipeValidator.validate({ slug, id: null });
-  const validate = () => validateRecipe(data);
-  const create = (recipe) => recipesRepository.create(recipe);
+  createRecipe (data) {
+    const correlationId = this._correlation || uuid.v4();
+    /**
+     * Allow custom slug, empty will fail validation
+     */
+    const slug = slugify(data.slug || data.name || '', { lower: true });
+    const handleFound = ifElse(head, conflict(slug), () => new Recipe(data));
 
-  return recipesRepository.find({ slug })
-    .then(handleFound)
-    .then(validate)
-    .then(create)
-    .catch(serviceUtils.handleError);
-}
+    const find = (slug) => recipesRepository
+      .correlate(correlationId)
+      .findRecipes({ slug });
 
-function updateRecipe (_slug, data) {
-  const slug = slugify(data.slug || data.name || _slug, { lower: true });
+    const create = (recipe) => recipesRepository
+      .correlate(correlationId)
+      .createRecipe(recipe);
 
-  const _slugQuery = { slug: _slug };
-  const slugQuery = { slug };
+    return find(slug)
+      .then(handleFound)
+      .then(create)
+      .catch(handleError);
+  },
 
-  const getOldRecipe = pipe(prop('oldRecipe'), head);
+  updateRecipe (_slug, data) {
+    const correlationId = this._correlation || uuid.v4();
 
-  const oldIsEmpty = pipe(prop('oldRecipe'), isEmpty);
-  const handleOldEmpty = when(oldIsEmpty, notFound(_slug));
+    // const slug = slugify(data.slug || data.name || _slug, { lower: true });
+    //
+    // const _slugQuery = { slug: _slug };
+    // const slugQuery = { slug };
+    //
+    // const getOldRecipe = pipe(prop('oldRecipe'), head);
+    //
+    // const oldIsEmpty = pipe(prop('oldRecipe'), isEmpty);
+    // const handleOldEmpty = when(oldIsEmpty, notFound(_slug));
+    //
+    // const newIsFound = pipe(prop('newRecipe'), head);
+    // const handleNewFound = when(newIsFound, conflict(slug));
+    //
+    // const validate = (recipe) => recipeValidator.validate({ slug, id: recipe.id })(data);
+    // const update = (recipe) => recipesRepository.update(_slugQuery, recipe);
+    //
+    // return Promise.props({
+    //   oldRecipe: recipesRepository.find(_slugQuery),
+    //   newRecipe: _slug !== slug ? recipesRepository.find(slugQuery) : []
+    // })
+    //   .then(handleOldEmpty)
+    //   .then(handleNewFound)
+    //   .then(getOldRecipe)
+    //   .then(validate)
+    //   .then(update)
+    //   .catch(handleError);
+  },
 
-  const newIsFound = pipe(prop('newRecipe'), head);
-  const handleNewFound = when(newIsFound, conflict(slug));
+  deleteRecipe (slug) {
+    const correlationId = this._correlation || uuid.v4();
+    const handleEmpty = when(isEmpty, notFound(slug));
 
-  const validate = (recipe) => recipeValidator.validate({ slug, id: recipe.id })(data);
-  const update = (recipe) => recipesRepository.update(_slugQuery, recipe);
+    const find = (slug) => recipesRepository
+      .correlate(correlationId)
+      .findRecipes({ slug });
 
-  return Promise.props({
-    oldRecipe: recipesRepository.find(_slugQuery),
-    newRecipe: _slug !== slug ? recipesRepository.find(slugQuery) : []
-  })
-    .then(handleOldEmpty)
-    .then(handleNewFound)
-    .then(getOldRecipe)
-    .then(validate)
-    .then(update)
-    .catch(serviceUtils.handleError);
-}
+    const destroy = (recipe) => recipesRepository
+      .correlate(correlationId)
+      .deleteRecipe(recipe);
 
-function deleteRecipe (slug) {
-  const handleEmpty = when(isEmpty, notFound(slug));
+    return find(slug)
+      .then(handleEmpty)
+      .then(destroy)
+      .catch(handleError);
+  },
 
-  const destroy = () => recipesRepository.delete({ slug });
-
-  return recipesRepository.find({ slug })
-    .then(handleEmpty)
-    .then(destroy)
-    .catch(serviceUtils.handleError);
-}
-
-export default {
-  list: listRecipes,
-  get: getRecipe,
-  create: createRecipe,
-  update: updateRecipe,
-  delete: deleteRecipe
+  correlate(id) {
+    console.log(id);
+    return Object.create(this, {
+      _correlation: { value: id }
+    });
+  }
 };
+
+export default service;

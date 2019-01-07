@@ -19,6 +19,6 @@ export const knexConfig = {
   }
 };
 
-Model.knex(connection);
+Model.knex(knex(knexConfig));
 
-export default knex(knexConfig);
+export default Model.knex();

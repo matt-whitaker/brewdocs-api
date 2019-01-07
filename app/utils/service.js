@@ -1,4 +1,4 @@
-function handleError (err) {
+export function handleError (err) {
   throw err;
 }
 

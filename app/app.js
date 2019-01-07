@@ -2,8 +2,8 @@ import cors from 'cors';
 import express from 'express';
 import { isNil, reject } from 'ramda';
 
-import api from './routes/api';
-import health from './routes/health';
+import ApiRouter from './routers/api/APIRouter';
+import HealthRouter from './routers/HealthRouter';
 import error from './utils/error';
 import boom from 'boom';
 
@@ -29,12 +29,12 @@ function createApp () {
     /**
      * Setup API router
      */
-    app.use(`/v1`, api.router());
+    app.use(`/v1`, new ApiRouter());
 
     /**
      * Setup health check
      */
-    app.use('/health', health.router());
+    app.use('/health', new HealthRouter());
 
     /**
      * Catch the rest

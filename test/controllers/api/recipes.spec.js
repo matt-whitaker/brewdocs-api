@@ -1,5 +1,5 @@
 import recipesService from '../../../app/services/recipes';
-import recipesController from '../../../app/controllers/api/recipes';
+import recipesController from '../../../app/controllers/api/RecipesController';
 
 import recipesData from '../../../db/data/recipes';
 

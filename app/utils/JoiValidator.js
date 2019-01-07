@@ -13,6 +13,4 @@ class JoiValidator extends Validator {
     }
 }
 
-export default {
-    JoiValidator
-};
+export default JoiValidator;

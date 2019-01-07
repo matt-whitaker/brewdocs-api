@@ -1,47 +1,71 @@
 import Promise from 'bluebird';
-import database from '../utils/database';
-import repositoryUtils from '../utils/repository';
+import { transaction } from 'objection'
+import Recipe from '../models/Recipe';
+import utils from '../utils/repository';
 
-function findRecipes (query = {}) {
-  const q = database.from('recipes').select('*');
+const handleError = utils.handleError('recipes');
 
-  if (typeof query === 'object' && Object.keys(query).length) {
-    return q.where(query).catch(repositoryUtils.handleDbError);
+const repository = {
+  /**
+   * Retrieves a list of recipes. Supports basic key-value query via an object.
+   * @param   {Object} query
+   * @returns {Promise<Recipe[]>}
+   */
+  findRecipes (query = {}) {
+    if (utils.ifQuery(query)) {
+      return Recipe.query().where(query).catch(handleError);
+    }
+
+    return Recipe.query().catch(handleError);
+  },
+
+  /**
+   * Save a new recipe.
+   * @param   {Recipe} recipe
+   * @returns {Promise<Recipe>}
+   */
+  createRecipe (recipe) {
+    return transaction.start(Recipe.knex())
+      .then((trx) =>
+        recipe.$query(trx).insertGraphAndFetch(recipe)
+          .catch(handleError));
+  },
+
+  /**
+   * Save an existing recipe.
+   * @param   {Recipe} recipe
+   * @returns {Promise<Recipe>}
+   */
+  updateRecipe (recipe) {
+    return transaction.start(Recipe.knex())
+      .then((trx) =>
+        recipe.$query(trx).upsertGraphAndFetch(recipe)
+          .catch(handleError));
+  },
+
+  /**
+   * Deletes a recipe
+   * @param   {Recipe} recipe
+   * @returns {Promise}
+   */
+  deleteRecipe (recipe) {
+    return transaction.start(Recipe.knex())
+      .then((trx) =>
+        recipe.$query(trx).delete()
+          .catch(handleError))
+  },
+
+  /**
+   * Return a child of the service bound to the correlationId
+   * @param id
+   * @returns {any}
+   */
+  correlate(id) {
+    console.log(id);
+    return Object.create(this, {
+      _correlation: { value: id }
+    });
   }
-
-  return q.catch(repositoryUtils.handleDbError);
-}
-
-function createRecipe (data) {
-  return database.into('recipes').insert(data)
-    .then(([id]) => ({ ...data, id }))
-    .catch(repositoryUtils.handleDbError);
-}
-
-function updateRecipe (query = {}, data) {
-  if (typeof query === 'object' && Object.keys(query).length) {
-    return database.from('recipes').where(query).update(data)
-      .then(() => data)
-      .catch(repositoryUtils.handleDbError);
-  }
-
-  return Promise.reject(new Error('Query is empty.'))
-    .catch(repositoryUtils.handleDbError);
-}
-
-function deleteRecipe (query = {}) {
-  if (typeof query === 'object' && Object.keys(query).length) {
-    return database.from('recipes').where(query).del()
-      .catch(repositoryUtils.handleDbError);
-  }
-
-  return Promise.reject(new Error('Query is empty.'))
-    .catch(repositoryUtils.handleDbError);
-}
-
-export default {
-  find: findRecipes,
-  create: createRecipe,
-  update: updateRecipe,
-  delete: deleteRecipe
 };
+
+export default repository;
